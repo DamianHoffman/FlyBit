@@ -58,10 +58,11 @@ No servers, no data collection. The scripts import only the Python standard libr
 ## Repository layout
 
 ```
+.claude-plugin/  plugin manifest
+skills/          the four skills (SKILL.md, references, scripts)
+tests/           unit tests
 docs/            landing page (GitHub Pages)
-flybit-plugin/   the plugin: manifest, skills, scripts, tests
-LICENSE
-README.md
+CHANGELOG.md  CONTRIBUTING.md  SECURITY.md  LICENSE  README.md
 ```
 
 ## Ideas for later (no commitment)

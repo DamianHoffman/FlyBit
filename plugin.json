@@ -1,0 +1,10 @@
+{
+  "name": "flybit",
+  "version": "0.2.0",
+  "description": "Open-source plugin for Claude: plan, write, check and measure email and SMS automations for small businesses and startups. Sends nothing.",
+  "author": { "name": "Damian Hoffman", "url": "https://github.com/DamianHoffman" },
+  "homepage": "https://github.com/DamianHoffman/FlyBit",
+  "repository": "https://github.com/DamianHoffman/FlyBit",
+  "license": "MIT",
+  "keywords": ["email", "sms", "marketing", "automation", "ab-testing", "claude"]
+}

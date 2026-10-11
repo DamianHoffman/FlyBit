@@ -8,11 +8,11 @@ FlyBit is a set of skills for Claude (plain-text instructions) and two Python sc
 
 Please do not open a public issue for a security problem.
 
-Use GitHub's private vulnerability reporting: open the repository's Security tab and choose "Report a vulnerability". If that option is not available, use this contact: BRAK DANYCH
+Use GitHub's private vulnerability reporting: open the repository's Security tab and choose "Report a vulnerability". If that option is not available, open a public issue that asks for a private contact channel and contains no technical details about the problem.
 
 ## Supported versions
 
-BRAK DANYCH
+Only the latest release (see `CHANGELOG.md`).
 
 ## What to include
 
