@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<!--
+  FLYBIT – strona pobierania pluginu
+  PLACEHOLDERY: wszystko w nawiasach kwadratowych [ ] to miejsce do uzupełnienia.
+  Wyszukaj znak „[” w edytorze, żeby znaleźć je wszystkie (także w href i <meta>).
+  [LOGIN] = Twój login na GitHubie; repozytorium zakładamy pod nazwą „flybit”.
+  Struktura plików:  docs/index.html (samodzielny, bez zewnętrznych plików; publikacja przez GitHub Pages)
+-->
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FlyBit – plugin do Claude dla małych firm i startupów</title>
+<meta name="description" content="FlyBit: plugin open source do Claude dla małych firm i startupów. Planuj, pisz, sprawdzaj i mierz automatyzacje e-mail i SMS. Niczego nie wysyła.">
+<!-- Po wdrożeniu odkomentuj i wpisz adres: <link rel="canonical" href="https://[LOGIN].github.io/flybit/"> -->
+<!-- Favicon: dodaj własny plik, gdy będzie gotowy, np. <link rel="icon" href="favicon.png"> -->
+<meta name="theme-color" content="#0a0a0a">
+<style>
+/* ===== 1. Zmienne: motyw czarno-biały. Tu zmienisz kolory, font i szerokość ===== */
+:root{
+  color-scheme:dark;
+  --bg:#0a0a0a;                    /* tło: czerń */
+  --fg:#fff;                       /* tekst główny: biel */
+  --muted:#a3a3a3;                 /* tekst pomocniczy: szary (kontrast ok. 8:1) */
+  --line:rgba(255,255,255,.1);     /* cienkie linie */
+  --line-2:rgba(255,255,255,.22);  /* mocniejsze linie */
+  --panel:#121212;                 /* tło pola pobierania */
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; /* bez Google Fonts (RODO). Własny font: hostuj lokalnie */
+  --w:1120px; --pad:48px; --r:8px;
+}
+
+/* ===== 2. Baza ===== */
+*{box-sizing:border-box}
+html{scroll-padding-top:84px}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 1.0625rem/1.6 var(--font);-webkit-text-size-adjust:100%}
+a{color:inherit}
+p{margin:0}
+code{padding:.1em .4em;background:rgba(255,255,255,.08);border-radius:4px;font-size:.85em;overflow-wrap:anywhere}
+:focus-visible{outline:3px solid #fff;outline-offset:3px;border-radius:4px}
+.wrap{max-width:var(--w);margin:0 auto;padding:0 var(--pad)}
+.skip{position:absolute;left:-999px;top:8px;z-index:10;background:#fff;color:#0a0a0a;padding:10px 14px;border-radius:var(--r)}
+.skip:focus{left:8px}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.03em;line-height:1.08}
+h1{font-size:clamp(2.4rem,5.8vw,4rem);letter-spacing:-.045em;line-height:1.02;text-wrap:balance}
+h2{font-size:clamp(1.6rem,3.2vw,2.25rem)}
+h3{font-size:1.125rem;letter-spacing:-.01em;line-height:1.3}
+/* delikatna ramka wokół treści (jak w referencji), tylko na szerokich ekranach */
+main{max-width:var(--w);margin:0 auto;box-shadow:inset 1px 0 0 var(--line),inset -1px 0 0 var(--line)}
+
+/* ===== 3. Nagłówek ===== */
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:68px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:600;font-size:1.15rem;letter-spacing:-.02em}
+nav{display:flex;align-items:center;gap:24px}
+nav a:not(.btn){text-decoration:none;color:var(--muted);font-size:.95rem}
+nav a:not(.btn):hover{color:var(--fg)}
+
+/* ===== 4. Przyciski ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;border:1px solid transparent;border-radius:var(--r);font:500 .95rem var(--font);text-decoration:none;cursor:pointer}
+.btn--primary{background:#fff;color:#0a0a0a}
+.btn--primary:hover{background:#d9d9d9}
+.btn--secondary{background:#1a1a1a;border-color:var(--line);color:#fff}
+.btn--secondary:hover{background:#262626}
+.btn--lg{width:100%;min-height:56px;font-size:1.0625rem}
+
+/* ===== 5. Hero i pole pobierania ===== */
+.hero{display:grid;gap:56px;align-items:center;padding-block:88px 96px}
+.lead{margin:24px 0 32px;max-width:34em;font-size:1.15rem;color:var(--muted)}
+.card{padding:32px;background:var(--panel);border:1px solid var(--line);border-radius:16px}
+.card h2{font-size:1.4rem}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:20px;margin:24px 0;padding:22px 0;border:solid var(--line);border-width:1px 0}
+.meta div{display:flex;flex-direction:column-reverse}  /* wartość nad etykietą (kolejność w HTML: etykieta, wartość) */
+.meta dt{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0 0 4px;font-size:1.25rem;font-weight:500;letter-spacing:-.02em;overflow-wrap:anywhere}
+.note{margin-top:16px;font-size:.9rem;color:var(--muted)}
+.note--info{color:var(--fg)}
+@media (min-width:900px){.hero{grid-template-columns:1.1fr .9fr}}
+
+/* ===== 6. Sekcje ===== */
+section{padding:80px 0;border-top:1px solid var(--line)}
+section>.wrap>h2{max-width:16em;margin-bottom:44px}
+.cols{display:grid;gap:32px;list-style:none;margin:0;padding:0}
+.cols>*{padding-top:20px;border-top:1px solid var(--line-2)}
+.cols p{margin-top:8px;color:var(--muted)}
+.spec{display:grid;margin:0;border-top:1px solid var(--line)}
+.spec div{display:grid;gap:4px 32px;padding:20px 0;border-bottom:1px solid var(--line)}
+.spec dt{font-weight:600}
+.spec dd{margin:0;color:var(--muted)}
+@media (min-width:760px){
+  .cols--3{grid-template-columns:repeat(3,1fr)}
+  .cols--2{grid-template-columns:repeat(2,1fr);gap:40px 48px}
+  .spec div{grid-template-columns:260px 1fr}
+}
+
+/* FAQ: natywne <details>, działa bez JavaScriptu */
+details{border-bottom:1px solid var(--line)}
+details:first-of-type{border-top:1px solid var(--line)}
+summary{display:flex;justify-content:space-between;gap:16px;min-height:44px;padding:20px 0;font-weight:600;font-size:1.1rem;list-style:none;cursor:pointer}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:1.5rem;font-weight:400;line-height:1}
+details[open] summary::after{content:"−"}
+details p{max-width:44em;padding-bottom:20px;color:var(--muted)}
+
+/* ===== 6b. Newsletter ===== */
+#newsletter{padding:56px 0}
+.nl{display:grid;gap:28px;align-items:center}
+.nl p{margin-top:10px;max-width:30em;color:var(--muted)}
+.goal{max-width:36em;font-size:1.25rem;color:var(--muted)}
+.nl-label{display:block;margin-bottom:8px;font-size:.9rem;font-weight:500}
+.nl-row{display:flex;gap:12px}
+.nl input[type=email]{flex:1;min-width:0;min-height:48px;padding:0 14px;background:#161616;color:var(--fg);border:1px solid var(--line-2);border-radius:var(--r);font:inherit}
+.nl input[type=email]::placeholder{color:#8a8a8a}
+.nl-row .btn{flex:none}
+.consent{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:.85rem;color:var(--muted)}
+.consent input{flex:none;width:18px;height:18px;margin:2px 0 0;accent-color:#fff}
+@media (min-width:900px){.nl{grid-template-columns:1fr 1fr;gap:56px}}
+@media (max-width:480px){.nl-row{flex-direction:column}}
+
+/* ===== 7. Stopka ===== */
+footer{padding:48px 0;border-top:1px solid var(--line);font-size:.95rem;color:var(--muted)}
+.foot{display:grid;gap:32px}
+footer .brand{color:var(--fg);font-size:1.1rem}
+footer a:hover{color:var(--fg)}
+footer ul{display:flex;flex-wrap:wrap;gap:8px 24px;margin:0;padding:0;list-style:none}
+.legal{grid-column:1/-1;max-width:60em;font-size:.85rem}
+.contact{margin-top:16px}
+@media (min-width:760px){.foot{grid-template-columns:1fr auto;align-items:start}}
+
+/* ===== 8. Mniejsze ekrany ===== */
+@media (max-width:1120px){main{box-shadow:none}}
+@media (max-width:720px){
+  :root{--pad:20px}
+  nav a:not(.btn){display:none}   /* na telefonie zostaje tylko przycisk „Pobierz” */
+  .hero{padding-block:44px 56px;gap:36px}
+  .card{padding:24px}
+  section{padding:56px 0}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#tresc">Przejdź do treści</a>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="#top">
+      FlyBit
+    </a>
+    <nav aria-label="Główna nawigacja">
+      <a href="#funkcje">Funkcje</a>
+      <a href="#kompatybilnosc">Kompatybilność</a>
+      <a href="#faq">FAQ</a>
+      <a class="btn btn--primary" href="#pobierz">Pobierz</a>
+    </nav>
+  </div>
+</header>
+
+<main id="tresc">
+  <!-- HERO + POLE POBIERANIA -->
+  <div class="wrap hero" id="top">
+    <div>
+      <h1>FlyBit: plugin do Claude dla małych firm i&nbsp;startupów</h1>
+      <p class="lead">FlyBit to plugin open source do Claude, który pomaga małym firmom i startupom planować, pisać, sprawdzać i mierzyć automatyzacje e-mail i SMS. Przygotowuje szkice do Twojej akceptacji i niczego nie wysyła.</p>
+      <a class="btn btn--secondary" href="https://github.com/[LOGIN]/flybit#readme">Instrukcja instalacji</a>
+    </div>
+
+    <div class="card" id="pobierz" role="region" aria-labelledby="dl-tytul">
+      <h2 id="dl-tytul">Pobierz FlyBit</h2>
+      <dl class="meta">
+        <div><dt>Wersja</dt><dd>[X.Y.Z]</dd></div>
+        <div><dt>Rozmiar</dt><dd>[XX KB]</dd></div>
+        <div><dt>Format</dt><dd>.zip</dd></div>
+      </dl>
+      <!-- GŁÓWNY LINK DO POBRANIA (adres na GitHubie): zastąp tylko wartość href -->
+      <a class="btn btn--primary btn--lg" href="https://github.com/[LOGIN]/flybit/releases/latest">Pobierz FlyBit z GitHuba</a>
+      <p class="note note--info">Przycisk prowadzi do GitHuba, skąd pobierzesz plugin.</p>
+      <!-- SUMA SHA-256 dotyczy konkretnego pliku flybit-plugin.zip (po zmianie nazwy policz sumę i rozmiar od nowa). Po przebudowaniu archiwum policz ją od nowa (shasum -a 256 plik) i zaktualizuj też rozmiar. -->
+      <p class="note">Przed instalacją możesz porównać sumę kontrolną SHA-256 pliku flybit-plugin.zip: <code>[SUMA SHA-256]</code>. Kroki opisuje <a href="https://github.com/[LOGIN]/flybit#readme">instrukcja instalacji</a>, zasady użytkowania – <a href="https://github.com/[LOGIN]/flybit/blob/main/LICENSE">licencja pluginu</a>.</p>
+      <p class="note">FlyBit jest niezależnym projektem i nie jest oficjalnie powiązany z firmami Anthropic ani GitHub.</p>
+    </div>
+  </div>
+
+  <!-- NEWSLETTER: sam formularz (e-mail + zgoda), bez JavaScriptu.
+       W action wklej adres formularza z Twojego dostawcy newslettera i w razie potrzeby dopasuj nazwy pól (name).
+       Po wysłaniu użytkownik trafia na stronę dostawcy. -->
+  <section id="newsletter">
+    <div class="wrap nl">
+      <div>
+        <h2 id="nl-tytul">Bądź na bieżąco</h2>
+        <p>Zapisz się na newsletter, żeby otrzymywać informacje o aktualizacjach i dowiadywać się o nowościach w FlyBit.</p>
+      </div>
+      <form action="[ADRES FORMULARZA NEWSLETTERA]" method="post" aria-labelledby="nl-tytul">
+        <label class="nl-label" for="nl-email">Adres e-mail</label>
+        <div class="nl-row">
+          <input id="nl-email" type="email" name="email" autocomplete="email" placeholder="twoj@adres.pl" required>
+          <button class="btn btn--primary" type="submit">Zapisz się</button>
+        </div>
+        <label class="consent"><input type="checkbox" name="zgoda" required><span>Wyrażam zgodę na otrzymywanie newslettera o FlyBit na ten adres e-mail. Mogę ją wycofać w każdej chwili. Administrator danych: [NAZWA PODMIOTU / AUTORA]. Szczegóły w <a href="[LINK DO POLITYKI PRYWATNOŚCI]">polityce prywatności</a>.</span></label>
+      </form>
+    </div>
+  </section>
+
+  <!-- O PLUGINIE -->
+  <section id="o-pluginie">
+    <div class="wrap">
+      <h2>Czym jest FlyBit</h2>
+      <div class="cols cols--3">
+        <div><h3>Czym jest</h3><p>FlyBit to plugin open source do Claude z czterema skillami, które pomagają zaplanować i przygotować automatyzacje marketingowe e-mail i SMS.</p></div>
+        <div><h3>Do czego służy</h3><p>Prowadzi przez automatyzacje, których małe firmy potrzebują na początek: serię powitalną, porzucony koszyk, po zakupie i prośbę o opinię, win-back oraz pielęgnację leadów. Pisze wiadomości, sprawdza długość SMS i listę kontrolną zgodności oraz planuje test A/B. Przepływ budujesz potem w narzędziu do e-maili lub SMS, którego już używasz.</p></div>
+        <div><h3>Dla kogo</h3><p>Dla właścicieli małych firm, founderów startupów i samodzielnych marketerów, którzy chcą łatwo i tanio zacząć z automatyzacją e-mail i SMS.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CEL PROJEKTU -->
+  <section id="cel">
+    <div class="wrap">
+      <h2>Cel projektu</h2>
+      <p class="goal">Przeprowadzić małą firmę od zera do działającej, mierzonej automatyzacji e-mail lub SMS w jedno popołudnie, w narzędziu, które już ma, albo w darmowym planie. To cel, a nie zmierzony wynik.</p>
+    </div>
+  </section>
+
+  <!-- FUNKCJE: dodaj lub usuń <li> według potrzeb -->
+  <section id="funkcje">
+    <div class="wrap">
+      <h2>Najważniejsze funkcje</h2>
+      <ul class="cols cols--2">
+        <li><h3>Kreator automatyzacji</h3><p>Wybierasz jeden z pięciu przepływów i dostajesz odbiorców, mapę przepływu, treści e-mail i SMS oraz listę kroków konfiguracji w pliku flow.md. Działa też w trybie poprawiania istniejącej automatyzacji.</p></li>
+        <li><h3>Sprawdzanie długości SMS</h3><p>Liczy segmenty i pokazuje, które znaki (akcenty, cyrylica, emoji, cudzysłowy typograficzne) przenoszą SMS z 160 na 70 znaków w segmencie. Gdy się da, podaje wariant uproszczony, a po podaniu ceny szacuje koszt.</p></li>
+        <li><h3>Lista kontrolna zgodności</h3><p>Uniwersalne kontrole oraz pakiety zasad dla UE i Polski, Stanów Zjednoczonych oraz komunikacji zdrowotnej w Polsce (opcjonalny). Nie jest opinią prawną: sporne punkty oznacza do sprawdzenia przez prawnika.</p></li>
+        <li><h3>Planowanie i analiza testów A/B</h3><p>Wylicza potrzebną wielkość próby, sprawdza, czy wynik jest czymś więcej niż przypadkiem, i pisze raport z kolejnym testem do wykonania.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- KOMPATYBILNOŚĆ: przykłady w nawiasach zastąp prawdziwymi danymi -->
+  <section id="kompatybilnosc">
+    <div class="wrap">
+      <h2>Kompatybilność i wymagania</h2>
+      <dl class="spec">
+        <div><dt>Status</dt><dd>Wczesna wersja [X.Y.Z]. [UZUPEŁNIJ po uruchomieniu testów dla FlyBit: liczba testów i wynik. Wcześniejsze wyniki dotyczyły kodu sprzed zmiany nazwy.]</dd></div>
+        <div><dt>Obsługiwane aplikacje</dt><dd>Claude w czacie (claude.ai i aplikacja desktopowa) w płatnych planach (Pro, Max, Team, Enterprise) z włączonym „Code execution and file creation”. Claude Code 2.1.128 lub nowszy (wczytanie wprost z pliku ZIP). Cowork: według dokumentacji Anthropic się wczytuje, ale nie testowano.</dd></div>
+        <div><dt>Systemy operacyjne</dt><dd>[UZUPEŁNIJ: systemy operacyjne, na których testowano]</dd></div>
+        <div><dt>Wymagania</dt><dd>Płatny plan Claude do czatu albo Claude Code z Pythonem 3.8 lub nowszym. Bez kluczy API i zewnętrznych kont. Narzędzie do e-maili lub SMS jest opcjonalne i potrzebne dopiero do zbudowania gotowego przepływu. Na darmowym planie Claude nie zainstalujesz pluginu w czacie (skille można wgrać pojedynczo, nie testowano).</dd></div>
+        <div><dt>Języki</dt><dd>Instrukcje, skrypty i README są po angielsku (z krótkim akapitem po polsku), a Claude odpowiada w języku użytkownika. Sprawdzanie SMS obsługuje dowolny alfabet. Pakiety zasad obejmują Polskę i UE oraz Stany Zjednoczone.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- DOBRZE WIEDZIEĆ: ograniczenia i dane. Usuń całą sekcję, jeśli nie jest potrzebna. -->
+  <section id="ograniczenia">
+    <div class="wrap">
+      <h2>Dobrze wiedzieć</h2>
+      <div class="cols cols--2">
+        <div><h3>To nie jest platforma wysyłkowa</h3><p>FlyBit projektuje automatyzację, pisze wiadomości, sprawdza je i planuje pomiar. Niczego nie wysyła, nie łączy się z danymi klientów i sam nie uruchamia automatyzacji. Przepływ budujesz w swoim narzędziu do e-maili lub SMS.</p></div>
+        <div><h3>Nie jest opinią prawną</h3><p>Lista zgodności pomaga przejrzeć treść i oznacza punkty do sprawdzenia przez prawnika. Pakiety zasad sprawdzono we wrześniu 2026, a amerykańskie zasady SMS tylko według komentarzy kancelarii. FlyBit nie zarządza zgodami ani wypisami odbiorców.</p></div>
+        <div><h3>Dane i prywatność</h3><p>Plugin nie ma własnych serwerów i nie zbiera danych. Skrypty używają tylko biblioteki standardowej Pythona i nie zawierają kodu sieciowego. W Claude Code kreator zapisuje flow.md w folderze flybit-output, a w czacie tworzy plik do pobrania albo wkleja treść do rozmowy. Rozmowę przetwarza Claude na zasadach Twojego konta.</p></div>
+        <div><h3>Wyniki to szacunki</h3><p>Liczba segmentów SMS to szacunek, bo dostawcy liczą trochę inaczej. Test A/B porównuje tylko dwa warianty. W czacie skrypty wymagają włączonego „Code execution and file creation”.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="wrap">
+      <h2>Najczęstsze pytania</h2>
+      <details><summary>Jak pobrać plugin?</summary>
+        <p>Kliknij przycisk „Pobierz FlyBit z GitHuba” w polu na górze strony. Przeniesie Cię on na GitHub, skąd pobierzesz plik .zip. W czacie Claude wybierz Customize &gt; Plugins &gt; Add &gt; Upload plugin i wskaż plik ZIP, włącz „Code execution and file creation” w Settings &gt; Capabilities, zacznij nową rozmowę i zapytaj „What skills do you have from plugins?”. W Claude Code możesz wypróbować plugin w jednej sesji: <code>claude --plugin-dir ./flybit-plugin.zip</code>.</p></details>
+      <details><summary>Z jakimi systemami lub aplikacjami działa?</summary>
+        <p>Działa z Claude (czat i Claude Code). Nie ma integracji z żadną platformą e-mail ani SMS, a plany w pliku flow.md są niezależne od narzędzia i nie były testowane z konkretnymi platformami. Szczegóły: sekcja „Kompatybilność i wymagania”.</p></details>
+      <details><summary>Gdzie znaleźć instrukcję instalacji?</summary>
+        <p>Instrukcja jest dostępna tutaj: <a href="https://github.com/[LOGIN]/flybit#readme">instrukcja instalacji FlyBit</a>. Znajdziesz ją także w pliku README.md w paczce (po angielsku, z krótkim akapitem po polsku).</p></details>
+      <details><summary>Czy plugin jest darmowy?</summary>
+        <p>[POTWIERDŹ: Tak, FlyBit jest darmowy i udostępniony na licencji MIT.] Korzystanie z pluginu w czacie Claude wymaga płatnego planu Claude. Szczegóły: <a href="https://github.com/[LOGIN]/flybit/blob/main/LICENSE">informacje o licencji</a>.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <a class="brand" href="#top">
+        FlyBit
+      </a>
+      <p class="contact">Kontakt: <a href="mailto:[E-MAIL KONTAKTOWY]">[E-MAIL KONTAKTOWY]</a></p>
+    </div>
+    <ul aria-label="Informacje prawne">
+      <li><a href="[LINK DO POLITYKI PRYWATNOŚCI]">Polityka prywatności</a></li>
+      <li><a href="[LINK DO REGULAMINU]">Regulamin</a></li>
+      <li><a href="https://github.com/[LOGIN]/flybit/blob/main/LICENSE">Licencja pluginu</a></li>
+    </ul>
+    <p class="legal">© <span id="rok">2026</span> [NAZWA PODMIOTU / AUTORA]. Wszelkie prawa zastrzeżone. FlyBit jest niezależnym projektem i nie jest oficjalnie powiązany z firmami Anthropic i GitHub ani przez nie wspierany. „Claude” jest znakiem towarowym Anthropic, a „GitHub” – GitHub, Inc.</p>
+  </div>
+</footer>
+
+<script>
+/* Jedyny skrypt: aktualizuje rok w stopce. Strona działa też bez JavaScriptu. Brak śledzenia i analityki. */
+document.getElementById('rok').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
